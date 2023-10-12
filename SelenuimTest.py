@@ -24,8 +24,8 @@ chrome_options = Options()
 #Put your own path to the chrome user data folder
 chrome_options.add_argument(r"--user-data-dir=C:\Users\danie\AppData\Local\Google\Chrome\User Data")
 
-chrome_options.add_argument("--headless")
-# chrome_options.add_argument("--full-screen")
+# chrome_options.add_argument("--headless")
+chrome_options.add_argument("--full-screen")
 
 if __name__ == "__main__":
    # open the browser
@@ -96,5 +96,6 @@ if __name__ == "__main__":
 
          # Wait to load page
          time.sleep(0.5)
-         i+=1
+         i+= len(tweets)
+      driver.refresh()
       file.close()
