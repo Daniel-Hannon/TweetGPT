@@ -3,6 +3,11 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
 import datetime
+import sqlite3
+con = sqlite3.connect("twitter.db")
+cur = con.cursor()
+cur.execute("CREATE TABLE IF NOT EXISTS trending(id, trending_topic_name)")
+cur.execute("CREATE TABLE IF NOT EXISTS tweet(id ,trend_id, tweet ,likes ,comments,retweets,date_tweeted , date_retrieved)")
 
 """
 This program opens a chrome browser and goes to the twitter trending page.
@@ -61,7 +66,9 @@ if __name__ == "__main__":
       file = open("temp_holder_for_test/"+file_name,"w",encoding="utf-8")
       file.write("Tweets from Trend = "+trend_name+"\n")
       file.write("--------------------------------------------------\n")
-
+      #cur.execute("CREATE TABLE IF NOT EXISTS trending(id, trending_topic_name)")
+      #cur.execute("CREATE TABLE IF NOT EXISTS tweet(id ,trend_id, tweet ,likes ,comments,retweets,date_tweeted , date_retrieved)")
+      cur.execute(f"INSERT INTO trends VALUES ('{trend_name}')")
       i=0
 
       #loop until 50 unique tweets are found or 75 scrolls are done
@@ -80,6 +87,10 @@ if __name__ == "__main__":
             views = links[len(links)-1].text
             date_scraped = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             # date_tweeted = tweet.find_element(By.CSS_SELECTOR,'time').get_attribute('datetime')
+            #cur.execute("CREATE TABLE IF NOT EXISTS trending(id, trending_topic_name)")
+            #cur.execute("CREATE TABLE IF NOT EXISTS tweet(id ,trend_id, tweet ,likes ,comments,retweets,date_tweeted , date_retrieved)")
+            #need to make sure we avoid allowing sql injection
+            cur.execute(f"INSERT INTO tweets VALUES ('{trend_id}','{tweet}','{likes}','{comments}','{retweets}','{date_tweeted}','{date_scraped}' )")
 
             file.write("Tweet ID: "+tweet_id+"\n")
             file.write("Tweet: "+tweet_text+"\n")
@@ -97,4 +108,5 @@ if __name__ == "__main__":
          # Wait to load page
          time.sleep(0.5)
          i+=1
+         con.commit()
       file.close()
