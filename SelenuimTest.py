@@ -21,7 +21,7 @@ cur.execute("CREATE TABLE IF NOT EXISTS trends(id INTEGER PRIMARY KEY AUTOINCREM
 # create a tweets table with the all of the columns: tweet_id, trend_id, tweet_text, likes, comments, retweets, views, date_tweeted, date_scraped
 '''tweets
 ----------------
-tweet_id | foreign key trending topic id | tweet_text | likes | comments | retweets | views | date_tweeted | date_retrieved 
+tweet_id | foreign key trending topic id | tweet | likes | comments | retweets | views | date_tweeted | date_retrieved 
 '''
 cur.execute("CREATE TABLE IF NOT EXISTS tweets(tweet_id INTEGER PRIMARY KEY AUTOINCREMENT, trend_id, tweet ,likes ,comments, retweets, views, date_tweeted, date_retrieved, FOREIGN KEY(trend_id) REFERENCES trends(id))")
 
@@ -108,12 +108,12 @@ if __name__ == "__main__":
                date_tweeted = tweet.find_element(By.CSS_SELECTOR,'time').get_attribute('datetime')
             except:
                date_tweeted = "Null"
-            values= (tweet_id, tweet_text, likes, comments, retweets, views, date_tweeted, date_scraped)
+            values= (tweet_text, likes, comments, retweets, views, date_tweeted, date_scraped)
             # replace any empty values with 0
             values = [value if value != "" else "0" for value in values]
 
             # check if the tweet is already in the database by tweet_id
-            if cur.execute("SELECT * FROM tweets WHERE tweet_id = (?)", (tweet_id,)).fetchone() == None:
+            if cur.execute("SELECT * FROM tweets WHERE tweet = (?)", (tweet_text,)).fetchone() == None:
                # add to database
                cur.execute("INSERT INTO tweets(trend_id, tweet, likes, comments, retweets, views, date_tweeted, date_retrieved) VALUES (?,?,?,?,?,?,?,?)", (trend_id, values[0], values[1], values[2], values[3], values[4], values[5], values[6]))
 

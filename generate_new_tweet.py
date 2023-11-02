@@ -32,7 +32,6 @@ def get_tweets(trend_name: str) -> List[List]:
     for i, tweet in enumerate(tweets):
         tweets[i] = list(tweet)
 
-    print(tweets)
     return tweets
 
 
@@ -46,16 +45,16 @@ def calculate_tweet_score(tweet: List) -> int:
     """
 
     # get the number of likes
-    likes = tweet[4]
+    likes = tweet[3]
 
     # get the number of comments
-    comments = tweet[5]
+    comments = tweet[4]
 
     # get the number of retweets
-    retweets = tweet[6]
+    retweets = tweet[5]
 
     # get the number of views
-    views = tweet[7]
+    views = tweet[6]
 
     # get the date tweeted
     date_tweeted = tweet[7]
@@ -65,14 +64,28 @@ def calculate_tweet_score(tweet: List) -> int:
 
     # calculate the score
     # TODO: make this calculation better
+
     score = (
-        int(likes.replace(",", ""))
-        + int(comments)
-        + int(retweets)
-        + float(views.replace(".", "").replace("K", "00").replace(",", ""))
+        string_to_int(likes) +
+        string_to_int(comments) +
+        string_to_int(retweets) +
+        string_to_int(views)/1000
     )
 
     return score
+
+def string_to_int(num):
+    """
+    function to convert a string to an int
+
+    num: the string to convert
+
+    returns: the int
+    """
+    if num.__contains__("."):
+        return int(num.replace(".", "").replace(",", "").replace("K", "00").replace("M", "00000"))
+    else:
+        return int(num.replace(",", "").replace("K", "000").replace("M", "000000"))
 
 
 def get_best_tweets(tweets: List = [], n: int = 3) -> List[List]:
@@ -111,7 +124,7 @@ def format_tweets(tweets: List[List]) -> List[str]:
     template = "Tweet: {tweet} \nScore: {score}\n\n"
 
     for i, tweet in enumerate(tweets):
-        tweets[i] = template.format(tweet=tweet[3], score=tweet[-1])
+        tweets[i] = template.format(tweet=tweet[2], score=tweet[-1])
 
     return tweets
 
@@ -125,7 +138,7 @@ def generate_new_tweet(trend: str, best_tweets: List[List]) -> str:
 
     returns: a new tweet
     """
-    template = "You job is to generate a new tweet for the current trending topic: {trend}\n\nHere are the top tweets for this topic:\n\n{best_tweets}\n\nNow generate a new tweet for this topic:\n\n"
+    template = "You job is to generate a new tweet for the current trending topic based on the highest scoring tweets for that topic:{trend}\n\nHere are the top tweets for this topic and the scores for each tweet:\n\n{best_tweets}\n\nNow generate a new tweet for this topic based on these tweets but do not include a score:\n\n"
 
     # format the tweets
     best_tweets = format_tweets(best_tweets)
@@ -134,8 +147,6 @@ def generate_new_tweet(trend: str, best_tweets: List[List]) -> str:
 
     # generate the prompt
     prompt = template.format(trend=trend, best_tweets=best_tweets)
-
-    print(prompt)
 
     # generate a new tweet
     new_tweet = llm(prompt=prompt)
@@ -158,9 +169,9 @@ if __name__ == "__main__":
     # get the best tweets
     best_tweets = get_best_tweets(tweets)
 
-    print(best_tweets)
+    # print(best_tweets)
 
     # generate a new tweet
     new_tweet = generate_new_tweet(trend, best_tweets)
 
-    print(new_tweet)
+    print("The new tweet is:",new_tweet)
