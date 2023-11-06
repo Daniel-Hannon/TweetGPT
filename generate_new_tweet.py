@@ -5,11 +5,11 @@ from typing import List
 
 # get a token: https://platform.openai.com/account/api-keys
 ### MAKE SURE YOU DO NOT PUSH THIS TO THE GITHUB REPO
-your_open_ai_key = ""
+# your_open_ai_key = ""
 
-model_name = "gpt-3.5-turbo-instruct"
+# model_name = "gpt-3.5-turbo-instruct"
 
-llm = OpenAI(openai_api_key=your_open_ai_key, model_name=model_name, max_tokens=100)
+# llm = OpenAI(openai_api_key=your_open_ai_key, model_name=model_name, max_tokens=100)
 
 con = sqlite3.connect("twitter.db")
 cur = con.cursor()
@@ -129,7 +129,7 @@ def format_tweets(tweets: List[List]) -> List[str]:
     return tweets
 
 
-def generate_new_tweet(trend: str, best_tweets: List[List]) -> str:
+def generate_new_tweet(trend: str, best_tweets: List[List], llm) -> str:
     """
     function to generate a new tweet for a given trend
 
@@ -168,8 +168,6 @@ if __name__ == "__main__":
 
     # get the best tweets
     best_tweets = get_best_tweets(tweets)
-
-    # print(best_tweets)
 
     # generate a new tweet
     new_tweet = generate_new_tweet(trend, best_tweets)
